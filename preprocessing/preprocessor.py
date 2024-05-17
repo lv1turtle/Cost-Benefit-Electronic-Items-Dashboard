@@ -19,9 +19,7 @@ class Preprocessor:
 
     def extract_rows_by_keyword_contains(self, keyword, target_column, ignore_case_sensitive=False):
         """
-        해당하는 keyword가 target_column 값 내에 포함되어있으면,
-        해당 행을 제외시킴.
-        행이 제외된 데이터 프레임은 반환됨
+        해당하는 keyword가 target_column 값 내에 포함되어있는 행들만 반환됨
         :param keyword: 필터링할 키워드
         :param target_column: 키워드를 통해 필터링될 대상 컬럼
         :param ignore_case_sensitive: 대소문자 무시 여부
@@ -36,9 +34,7 @@ class Preprocessor:
 
     def extract_rows_by_keyword_exactly(self, keyword, target_column, ignore_case_sensitive=False):
         """
-        해당하는 keyword가 target_column 값의 단어들 중 일치하면,
-        해당 행을 제외시킴.
-        행이 제외된 데이터 프레임은 반환됨
+        해당하는 keyword가 target_column 값의 단어들 중 일치하는 행들만 반환됨
         :param keyword: 필터링할 키워드
         :param target_column: 키워드를 통해 필터링될 대상 컬럼
         :param ignore_case_sensitive: 대소문자 무시 여부
