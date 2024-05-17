@@ -8,8 +8,8 @@ import re
 need to install "lxml"
 -> "pip install lxml" 
 """
-YEAR = datetime.today().year
-MONTH = datetime.today().month
+YEAR = datetime.today().year # 크롤링 시작시 연도
+MONTH = datetime.today().month # 크롤링 시작시 월
 
 def get_soup_from_page_with(url):
     """
@@ -23,7 +23,7 @@ def get_soup_from_page_with(url):
 
 def scrap_hotdeal_info(soup, hotdeal_info):
     """
-    핫딜 게시물 PC/하드웨어 태그에서 다음의 데이터를 추출
+    핫딜 게시판 PC/하드웨어 태그 게시물들로부터 다음의 데이터를 추출하여 데이터 프레임에 추가
     1. 제목, 2. 업로드 날짜, 3. 가격, 4. 조회수, 5. 추천수
     :param url:
     :return:
@@ -42,6 +42,13 @@ def scrap_hotdeal_info(soup, hotdeal_info):
         print(hotdeal_info.tail(1))
 
 def get_hotdeal_summary(hotdeal):
+    """
+    핫딜 게시물 하나로부터
+    추천수, 제목, 가격, 조회수, 게시일 데이터를 스크랩하여 딕셔너리로 반환
+    값이 없는 요소는 "명시되어있지않음"으로 표시
+    :param hotdeal 핫딜 게시물 하나에 대한 soup :
+    :return 추천수, 제목, 가격, 조회수, 게시일을 담고있는 딕셔너리:
+    """
     votes_cell = hotdeal.select_one("td > span.num.num")
     if votes_cell:
         votes = votes_cell.text.strip()
@@ -87,11 +94,26 @@ def get_hotdeal_summary(hotdeal):
     }
 
 def correct(value):
+    """
+    데이터 무결성 보장을 위해
+    빈값인 경우 "명시되어있지않음"으로 표시
+    :param value:
+    :return:
+    """
     if value == '':
         return "명시되어있지않음"
     return value
 
 def parse_date(created_at):
+    """
+    게시물에 표시된 날짜 정보("HH:MM", "mm-dd")를 원하는 형태("YYYY-mm-dd")로 파싱
+    시간은 오늘 날짜로, mm-dd는 맞는 연도를 붙여서 반환
+    1월에서 12월로 넘어갈 때마다 연도 값을 하나씩 빼주어 게시글의 연도를 계산
+    날짜가 작성한 패턴과 다른 게 들어올시 ValueError에러를 발생시킴,
+    발생된 에러는 main()에서 처리
+    :param created_at: 게시물에 표시된 날짜 문자열("HH:MM", "mm-dd"):
+    :return 원하는 날짜 형태("YYYY-mm-dd") 문자열:
+    """
     global YEAR, MONTH
     time_pattern = r'\d{2}:\d{2}'
     date_pattern = r'\d{2}-\d{2}'
@@ -108,6 +130,11 @@ def parse_date(created_at):
     raise ValueError("잘못된 형식")
 
 def parse_views(views):
+    """
+    "2.2k" 와 같은 형식의 조회수를 정수형으로 변환하여 반환
+    :param views: 조회수 데이터:
+    :return: 정수 자료형의 조회수:
+    """
     if views.isdigit():
         return views
     unit_map = {'k': 1_000, 'm': 1_000_000, 'b': 1_000_000_000}
@@ -116,6 +143,11 @@ def parse_views(views):
     return int(views * unit_map[unit])
 
 def is_empty_page(soup):
+    """
+    더 이상 크롤링할 핫딜 게시물이 있는지 검사
+    :param soup 핫딜 게시판 페이지의 soup 객체:
+    :return 핫딜 게시물 여부:
+    """
     if soup.select_one(
             "div.list-board-wrap > "
             "div.market-type-list.market-info-type-list.relative >"
@@ -126,16 +158,22 @@ def is_empty_page(soup):
     return False
 
 def isBlocked(soup):
+    """
+    서버에서 크롤러를 차단했는지 여부를 검사
+    :param soup:
+    :return:
+    """
     if not soup.select_one("h2.title"):
         return False
     return True
 
 def main():
     """
-    1238 페이지까지 수집,
-    98페이지 2024년 -> 2023년으로 넘어감
-
-    :return:
+    퀘이사존 핫딜 웹페이지를 1 ~ 1238 페이지까지 방문하여
+    게시글 제목, 게시일, 가격, 조회수, 추천수들을 수집하여 csv파일로 저장.
+    모든 과정은 자동이며, 서버로부터 차단시 15초 기다린 후 재요청하여 이어서 수집,
+    사용자가 keyboard interrupt로 크롤링 종료시 크롤링한 지점까지 자동 저장,
+    잘못된 날짜 데이터 등 ValueError 발생시에도 크롤링한 지점까지 자동 저장
     """
     hotdeal_info = pd.DataFrame(columns=[
         'title', 'created_at', 'price',
