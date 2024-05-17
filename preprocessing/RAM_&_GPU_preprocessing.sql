@@ -1,11 +1,11 @@
 /%
-    대략적인 전처리 방식 :
+대략적인 전처리 방식 :
 
-    1. 각 부품을 추정할 수 있는 키워드 테이블을 생성
+1. 각 부품을 추정할 수 있는 키워드 테이블을 생성
 
-    2. title에서 해당의 부품의 키워드로 GPU에 해당하는 레코드를 찾고 
+2. title에서 해당의 부품의 키워드로 GPU에 해당하는 레코드를 찾고 
 
-    3. 다른 부품의 키워드에 매칭이 되는 레코드를 제거
+3. 다른 부품의 키워드에 매칭이 되는 레코드를 제거
 %/
 
 --------------------------------------------------------------------------------------------------------------
@@ -434,13 +434,13 @@ VALUES
 	('DDR5','4GB',0);
 
 /*
-	전처리가 되지 않은 raw_data에서 키워드로 ram을 찾기 위해
-	inner join을 실시, 공백을 제거한 title에 'ddr'과 'gb'가 포함되면 ram이라고 판단.
+전처리가 되지 않은 raw_data에서 키워드로 ram을 찾기 위해
+inner join을 실시, 공백을 제거한 title에 'ddr'과 'gb'가 포함되면 ram이라고 판단.
 
-	여기서 'ddr_' 정보와 '__gb' 정보를 추출.
+여기서 'ddr_' 정보와 '__gb' 정보를 추출.
 
-	title에서 공백 제거, '기가'->'gb' 변경, 'X'와 '*'을 'x'로 변경, ',' 제거.
-	( 향후 정규표현식 사용에 문제가 되기에 미리 처리 )
+title에서 공백 제거, '기가'->'gb' 변경, 'X'와 '*'을 'x'로 변경, ',' 제거.
+( 향후 정규표현식 사용에 문제가 되기에 미리 처리 )
 */
 WITH temp1 AS(
 	SELECT
@@ -459,11 +459,11 @@ WITH temp1 AS(
 	AND REPLACE(REPLACE(a.title,' ',''),'기가','gb') LIKE CONCAT('%',b.gb,'%')
 ),
 /*
-	예를 들어, title에 128GB가 적혀있으면 키워드가 8GB, 128GB 모두 통용이 되기에
-	inner join시 중복이 발생.
+예를 들어, title에 128GB가 적혀있으면 키워드가 8GB, 128GB 모두 통용이 되기에
+inner join시 중복이 발생.
 
-	inner join으로 인한 중복을 제거하기 위해,
-	GROUP BY로 묶고 가장 큰 값을 가진 GB만을 남기기 위해 MAX를 사용
+inner join으로 인한 중복을 제거하기 위해,
+GROUP BY로 묶고 가장 큰 값을 가진 GB만을 남기기 위해 MAX를 사용
 */
 temp2 AS(
 	SELECT
@@ -480,15 +480,15 @@ temp2 AS(
 	GROUP BY title,created_at,votes,views,price,shop_type,ddr,mhz
 ),
 /*
-	title에 있는 gb의 형태는 '__gb'뿐만 아니라
-	'__gb*_','_*__gb'도 있음.
+title에 있는 gb의 형태는 '__gb'뿐만 아니라
+'__gb*_','_*__gb'도 있음.
 
-	'*'의 경우 정규표현식으로 처리하기가 까다롭기 때문에,
-	위 쿼리문에서 'x'문자로 사전에 모두 변경. 
+'*'의 경우 정규표현식으로 처리하기가 까다롭기 때문에,
+위 쿼리문에서 'x'문자로 사전에 모두 변경. 
 
-	각 형태마다 CASE WHEN 구문과 정규표현식으로 'x'기준 앞 뒤 숫자를 구해 연산을 진행.
+각 형태마다 CASE WHEN 구문과 정규표현식으로 'x'기준 앞 뒤 숫자를 구해 연산을 진행.
 
-	그렇게 구한 값을 gb_test라는 컬럼으로 구성.
+그렇게 구한 값을 gb_test라는 컬럼으로 구성.
 */
 temp3 AS(
 	SELECT
@@ -513,10 +513,10 @@ temp3 AS(
 	FROM temp2
 ),
 /*
-	'__GB' 형태와 '_*__GB'의 형태가 한 title안에 있는 경우가 다수 존재.
-	
-	따라서, 위에서 만든 gb_test와 기존의 gb의 값을 비교하여
-	값이 더 큰 쪽을 선택하는 방식으로 처리.
+'__GB' 형태와 '_*__GB'의 형태가 한 title안에 있는 경우가 다수 존재.
+
+따라서, 위에서 만든 gb_test와 기존의 gb의 값을 비교하여
+값이 더 큰 쪽을 선택하는 방식으로 처리.
 */
 temp4 AS(
 	SELECT
@@ -535,12 +535,12 @@ temp4 AS(
 	FROM temp3
 ),
 /*
-	이제 mhz 정보를 추출.
+이제 mhz 정보를 추출.
 
-	mhz의 범위는 2300보다 큰 4자리 수.
-	mhz의 형태는 대략 '____mhz', 'ddr4-____', '____cl', 'ddr4____'
+mhz의 범위는 2300보다 큰 4자리 수.
+mhz의 형태는 대략 '____mhz', 'ddr4-____', '____cl', 'ddr4____'
 
-	각 형태마다 CASE WHEN 구문과 정규표현식으로 4자리 수를 추출.
+각 형태마다 CASE WHEN 구문과 정규표현식으로 4자리 수를 추출.
 */
 temp5 AS(
 	SELECT
@@ -566,9 +566,9 @@ temp5 AS(
 	FROM temp4
 ),
 /*
-	위 쿼리문에서 구한 ddr, gb, mhz 컬럼을 하나로 합치는 작업.
-	
-	최종으로 'DDR._..GB_....MHZ'형태로 만들어, RAM 분류를 종료.
+위 쿼리문에서 구한 ddr, gb, mhz 컬럼을 하나로 합치는 작업.
+
+최종으로 'DDR._..GB_....MHZ'형태로 만들어, RAM 분류를 종료.
 */
 temp6 AS(
 	SELECT
@@ -586,8 +586,8 @@ temp6 AS(
 	FROM temp5
 ),
 /*
-	RAM이 아닌 다른 부품의 키워드의 조합
-	다른 부품과 겹치는 부분을 처리해주기 위해 사용.
+RAM이 아닌 다른 부품의 키워드의 조합
+다른 부품과 겹치는 부분을 처리해주기 위해 사용.
 */
 tot_ver_ram AS(
 	SELECT item FROM project2.cpu
@@ -602,9 +602,9 @@ tot_ver_ram AS(
 )
 
 /*
-	RAM 분류가 종료된 테이블에
-	다른 부품 키워드 테이블을 LEFT JOIN WHERE IS NULL으로
-	차집합을 만들어 겹치는 부분을 제거.
+RAM 분류가 종료된 테이블에
+다른 부품 키워드 테이블을 LEFT JOIN WHERE IS NULL으로
+차집합을 만들어 겹치는 부분을 제거.
 */
 SELECT a.*
 FROM temp6 a
@@ -618,14 +618,14 @@ WHERE b.item IS NULL;
 
 
 /*
-	전처리가 되지 않은 raw_data에서 키워드로 gpu을 찾기 위해
-	inner join을 실시, 공백을 제거한 title에 gpu테이블의 키워드가 포함이 되면 gpu라고 판단.
+전처리가 되지 않은 raw_data에서 키워드로 gpu을 찾기 위해
+inner join을 실시, 공백을 제거한 title에 gpu테이블의 키워드가 포함이 되면 gpu라고 판단.
 
-	키워드 매칭이 된다면 해당 레코드는 매칭된 키워드가 바로 상품 이름이 된다.
-	ex) Colorful 특가 RTX3060 트윈프로져 -> RTX3060 (키워드이자 상품 이름)
+키워드 매칭이 된다면 해당 레코드는 매칭된 키워드가 바로 상품 이름이 된다.
+ex) Colorful 특가 RTX3060 트윈프로져 -> RTX3060 (키워드이자 상품 이름)
 
-	title에서 공백 제거, '슈퍼'->'super' 변경.
-	( 혼용되는 이름을 하나로 처리 )
+title에서 공백 제거, '슈퍼'->'super' 변경.
+( 혼용되는 이름을 하나로 처리 )
 */
 WITH gpu1 AS(
 	SELECT
@@ -642,14 +642,14 @@ WITH gpu1 AS(
 	ON REPLACE(REPLACE(a.title,' ',''),'슈퍼','super') LIKE CONCAT('%',b.item,'%')
 ),
 /*
-	예를 들어, title에 'GTX1660super'가 적혀있으면 키워드가 '1660', 'gtx1660', 'gtx1660super' 모두 통용이 되기에
-	inner join시 중복이 발생.
+예를 들어, title에 'GTX1660super'가 적혀있으면 키워드가 '1660', 'gtx1660', 'gtx1660super' 모두 통용이 되기에
+inner join시 중복이 발생.
 
-	inner join으로 인한 중복을 제거하기 위해,
-	가장 길이가 긴 product만을 남기려고 함.
+inner join으로 인한 중복을 제거하기 위해,
+가장 길이가 긴 product만을 남기려고 함.
 
-	이를 위해, MAX OVER PARTITION BY를 사용해 중복되는 값 중 가장 긴 길이를 측정해 그 값을 컬럼으로 지정.
-	(product_length)
+이를 위해, MAX OVER PARTITION BY를 사용해 중복되는 값 중 가장 긴 길이를 측정해 그 값을 컬럼으로 지정.
+(product_length)
 */
 gpu2 AS(
 	SELECT
@@ -665,7 +665,7 @@ gpu2 AS(
 	FROM gpu1
 ),
 /*
-	위에서 만든 product_length를 이용해 중복되는 값 중 가장 길이가 긴 값만 남김.
+위에서 만든 product_length를 이용해 중복되는 값 중 가장 길이가 긴 값만 남김.
 */
 gpu3 AS(
 	SELECT
@@ -681,11 +681,11 @@ gpu3 AS(
     WHERE LENGTH(product) = product_length
 ),
 /*
-	GPU 키워드 테이블에는 컬럼에 model과 item이 있는데,
-	item이 바로 키워드고 model은 키워드가 가리키는 최종 상품명이다.
-	( 상품명만으로 키워드를 사용하기엔 제약이 많기에 이런 방식을 사용 )
-	
-	그렇기에 마지막으로 남은 model을 product로 변경
+GPU 키워드 테이블에는 컬럼에 model과 item이 있는데,
+item이 바로 키워드고 model은 키워드가 가리키는 최종 상품명이다.
+( 상품명만으로 키워드를 사용하기엔 제약이 많기에 이런 방식을 사용 )
+
+그렇기에 마지막으로 남은 model을 product로 변경
 */
 gpu4 AS(
 	SELECT
@@ -702,8 +702,8 @@ gpu4 AS(
     ON a.product = b.item
 ),
 /*
-	GPU가 아닌 다른 부품의 키워드의 조합
-	다른 부품과 겹치는 부분을 처리해주기 위해 사용.
+GPU가 아닌 다른 부품의 키워드의 조합
+다른 부품과 겹치는 부분을 처리해주기 위해 사용.
 */
 tot AS(
 	SELECT item FROM project2.cpu
@@ -718,9 +718,9 @@ tot AS(
 )
 
 /*
-	GPU 분류가 종료된 테이블에
-	다른 부품 키워드 테이블을 LEFT JOIN WHERE IS NULL으로
-	차집합을 만들어 겹치는 부분을 제거.
+GPU 분류가 종료된 테이블에
+다른 부품 키워드 테이블을 LEFT JOIN WHERE IS NULL으로
+차집합을 만들어 겹치는 부분을 제거.
 */
 SELECT a.*
 FROM gpu4 a
