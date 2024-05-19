@@ -5,7 +5,7 @@ import re
 
 class Preprocessor:
     """
-    생성자로 받은 csv파일을 키워드를 통해 행을 필터링한 후, 데이터프레임으로 반환 및 csv로 저장하는 클래스
+    생성자로 받은 csv파일을 키워드를 통해 행을 필터링한 후, 데이터프레임으로 반환하는 클래스
     """
     def __init__(self, file):
         """
@@ -50,16 +50,3 @@ class Preprocessor:
                 self.df[target_column].apply(lambda x: keyword in x.split())
             ]
         return self.processed
-
-    def preprocessed_to_csv(self, file_name=None):
-        """
-        처리한 데이터 프레임을 csv파일로 저장
-        :param file_name: 저장될 파일의 이름, 없을 시 "processed_at_{저장시간}.csv" 로 저장
-        :return:
-        """
-        if self.processed is None:
-            raise AttributeError("처리판 데이터프레임이 없음")
-        if file_name is None:
-            self.processed.to_csv(f"processed_at_{datetime.now()}.csv", index=False)
-            return
-        self.processed.to_csv(f"{file_name}.csv", index=False)
