@@ -4,7 +4,7 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 ## 프로젝트 소개
 
 - 주제
-  > 컴퓨터 부품 가격 변동 패턴 분석 by 퀘이사존 핫딜 게시판 
+  > 컴퓨터 부품 가격 변동 패턴 분석 by 퀘이사존 핫딜 게시판 + PassMark CPU, GPU 벤치마크 페이지
   
 - 배경 및 목표
   > 컴퓨터 부품은 일반적인 다른 상품들에 비해 가격 변동이 큰 편이기에,
@@ -12,6 +12,7 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
   >
   > 퀘이사존의 핫딜 게시판의 컴퓨터 부품 핫딜 데이터를 통해, 
   > 대시보드를 구성하여 가격 변동의 패턴을 파악.
+  > 여기에 PassMark의 벤치마크 데이터를 통해 CPU, GPU 제품별 가성비도 파악.
   >
   > 최종적으로 소비자의 현명한 소비를 돕는 것이 주 목적.
 
@@ -19,19 +20,20 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 
 ### E-R Diagram
 #### Production schema
-![image](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/3a0d0f70-a158-4f24-9317-e69bdd8f87d9)
-
+![image]("https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/200ea58c-da2f-42e1-bfa1-7bef8764008a")
 
 #### Analytics schema (Datawarehouse)
-![image](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/7141c22f-2a80-487a-97c6-51f201aa4888)
+![image]("https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/17459046-601b-4b3d-b5c3-02a1dc4f2ae9")
 
 ### SW Architecture
 ![Untitled](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/52f63acc-f70d-4c37-bb73-6eb6f93afdc1)
 
 ### 데이터 수집
 
-#### BeautifulSoup4을 이용한 Web Crawling ( Quasarzone )
+#### BeautifulSoup4을 이용한 Web Crawling ( Quasarzone, Passmark )
 >https://quasarzone.com/bbs/qb_saleinfo
+>https://www.cpubenchmark.net/socketType.html#i48
+>https://www.videocardbenchmark.net/high_end_gpus.html
 
 ### 데이터 적재 및 전처리 ( ELT )
 
@@ -60,7 +62,8 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 #### PC Components Dashboard
 ![시각화-필터링-시연3](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/94ef2a8c-d0a2-4c01-a147-e295212f88bc)
 
-
+#### CPU, GPU, 성능, 가격 Dashboard
+![개인발표시연2](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/652933ed-a6b5-415a-b351-e3fd3717ef7c)
 
 ## Crawling 실행 방법
 
@@ -84,6 +87,7 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 
 - Crawl Data 받기
   - `py -m hotdeal_crawler`
+  - `py -m benchmark_crawler`
 
   - Preprocessing용 CPU 종류 추출
     - `py -m cpu_list_crawler`
