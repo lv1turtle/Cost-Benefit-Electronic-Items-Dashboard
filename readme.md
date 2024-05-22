@@ -12,6 +12,7 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
   >
   > 퀘이사존의 핫딜 게시판의 컴퓨터 부품 핫딜 데이터를 통해, 
   > 대시보드를 구성하여 가격 변동의 패턴을 파악.
+  > 
   > 여기에 PassMark의 벤치마크 데이터를 통해 CPU, GPU 제품별 가성비도 파악.
   >
   > 최종적으로 소비자의 현명한 소비를 돕는 것이 주 목적.
@@ -32,7 +33,9 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 
 #### BeautifulSoup4을 이용한 Web Crawling ( Quasarzone, Passmark )
 >https://quasarzone.com/bbs/qb_saleinfo
+>
 >https://www.cpubenchmark.net/socketType.html#i48
+>
 >https://www.videocardbenchmark.net/high_end_gpus.html
 
 ### 데이터 적재 및 전처리 ( ELT )
