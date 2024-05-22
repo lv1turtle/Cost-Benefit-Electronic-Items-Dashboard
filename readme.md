@@ -20,10 +20,10 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 
 ### E-R Diagram
 #### Production schema
-![image]("https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/200ea58c-da2f-42e1-bfa1-7bef8764008a")
+<img width="614" alt="production_schema" src="https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/200ea58c-da2f-42e1-bfa1-7bef8764008a">
 
 #### Analytics schema (Datawarehouse)
-![image]("https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/17459046-601b-4b3d-b5c3-02a1dc4f2ae9")
+<img width="745" alt="analytics_schema" src="https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/39334789/17459046-601b-4b3d-b5c3-02a1dc4f2ae9">
 
 ### SW Architecture
 ![Untitled](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/52f63acc-f70d-4c37-bb73-6eb6f93afdc1)
