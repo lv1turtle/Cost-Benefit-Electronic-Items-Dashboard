@@ -35,8 +35,12 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
 
 ### 데이터 적재 및 전처리 ( ELT )
 
-1. 수집한 데이터를 S3에 적재
-![image](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/1d69b99d-6494-4cf3-8e0f-bcf24534833b)
+1. 수집한 데이터를 S3에 적재 ( boto3 )
+      ```shell
+      cd s3
+      py -m s3_upload
+      ```
+      ![image](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/1d69b99d-6494-4cf3-8e0f-bcf24534833b)
 
 2. Python & SQL을 통해 전처리
 ![image](https://github.com/lv1turtle/PC-Components-Price-fluctuation-Dashboard/assets/32154881/af13fee4-33d7-4edd-a4dd-04cb883aecee)
@@ -79,8 +83,8 @@ We are developing PC Components Price fluctuation Patterns Analytics Dashboard b
   - `cd crawling`
 
 - Crawl Data 받기
-  - `python hotdeal_crawler.py`
+  - `py -m hotdeal_crawler`
 
   - Preprocessing용 CPU 종류 추출
-    - `python cpu_list_crawler.py`
+    - `py -m cpu_list_crawler`
 

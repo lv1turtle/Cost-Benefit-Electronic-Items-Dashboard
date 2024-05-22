@@ -35,6 +35,8 @@ def scrap_hotdeal_info(soup, hotdeal_info):
     )
     for idx, hotdeal in enumerate(hotdeal_list, start=1):
         hotdeal_summary = get_hotdeal_summary(hotdeal)
+        if not hotdeal_summary:
+            continue
         hotdeal_info.loc[len(hotdeal_info)] = [
             hotdeal_summary['title'], hotdeal_summary['created_at'], hotdeal_summary['price'],
             hotdeal_summary['views'], hotdeal_summary['votes']
@@ -50,59 +52,41 @@ def get_hotdeal_summary(hotdeal):
     :return 추천수, 제목, 가격, 조회수, 게시일을 담고있는 딕셔너리:
     """
     votes_cell = hotdeal.select_one("td > span.num.num")
-    if votes_cell:
-        votes = votes_cell.text.strip()
-        votes = correct(votes)
-    else:
-        votes = "명시되어있지않음"
+    if not votes_cell or len(votes_cell.text) == 0:
+        return
+    votes = votes_cell.text.strip()
+
     title_cell = hotdeal.select_one("td > div.market-info-list >"
                                "div.market-info-list-cont > p.tit >"
                                "a.subject-link > span.ellipsis-with-reply-cnt")
-    if title_cell:
-        title = title_cell.text
-        title = correct(title)
-    else:
-        title = "명시되어있지않음"
+    if not title_cell or len(title_cell.text) == 0:
+        return
+    title = title_cell.text.strip()
+
     price_cell = hotdeal.select_one("td > div.market-info-list >"
                                "div.market-info-list-cont > div.market-info-sub >"
                                "p > span > span.text-orange")
-    if price_cell:
-        price = price_cell.text.replace(" ", "").strip()
-        price = correct(price)
-    else:
-        price = "명시되어있지않음"
+    if not price_cell or len(price_cell.text) == 0:
+        return
+    price = price_cell.text.replace(" ", "").strip()
+
     views_cell = hotdeal.select_one("td > div.market-info-list >"
                                "div.market-info-list-cont > div.market-info-sub >"
                                "p > span.count")
-    if views_cell:
-        views = views_cell.text.strip()
-        views = correct(views)
-    else:
-        views = "명시되어있지않음"
+    if not views_cell or len(views_cell.text) == 0:
+        return
+    views = views_cell.text.strip()
 
     created_at_cell = hotdeal.select_one("td > div.market-info-list >"
                                     "div.market-info-list-cont > div.market-info-sub >"
                                     "p > span.date")
-    if created_at_cell:
-        created_at = created_at_cell.text.strip()
-        created_at = correct(created_at)
-    else:
-        created_at = "명시되어있지않음"
+    if not created_at_cell or len(created_at_cell.text) == 0:
+        return
+    created_at = created_at_cell.text.strip()
     return {
         "votes": votes, "title": title, "price": price,
         "views": parse_views(views), "created_at": parse_date(created_at)
     }
-
-def correct(value):
-    """
-    데이터 무결성 보장을 위해
-    빈값인 경우 "명시되어있지않음"으로 표시
-    :param value:
-    :return:
-    """
-    if value == '':
-        return "명시되어있지않음"
-    return value
 
 def parse_date(created_at):
     """
@@ -169,7 +153,7 @@ def isBlocked(soup):
 
 def main():
     """
-    퀘이사존 핫딜 웹페이지를 1 ~ 1238 페이지까지 방문하여
+    퀘이사존 핫딜 "PC/하드웨어" 카테고리에 해당하는 게시물 웹페이지를 더 이상 게시물이 없을 떄 까지 방문하여
     게시글 제목, 게시일, 가격, 조회수, 추천수들을 수집하여 csv파일로 저장.
     모든 과정은 자동이며, 서버로부터 차단시 15초 기다린 후 재요청하여 이어서 수집,
     사용자가 keyboard interrupt로 크롤링 종료시 크롤링한 지점까지 자동 저장,
